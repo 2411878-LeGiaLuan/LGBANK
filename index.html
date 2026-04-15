@@ -3,152 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LGBank v2.1 - Hệ Thống Tài Chính Đẳng Cấp</title>
+    <title>LGBank Platinum - International Banking</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #050810; color: white; overflow-x: hidden; }
-        .glass-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        .gradient-text { background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn-primary { background: linear-gradient(135deg, #1d4ed8, #7e22ce); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; background-color: #22c55e; box-shadow: 0 0 10px #22c55e; }
-        /* Hiệu ứng trượt cho danh sách */
-        .list-enter-active, .list-leave-active { transition: all 0.5s ease; }
-        .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(30px); }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        :root { --bg-deep: #020408; --accent: #3b82f6; }
+        body { font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-deep); color: #e2e8f0; overflow-x: hidden; }
+        .platinum-card { background: linear-gradient(135deg, rgba(30,41,59,0.5) 0%, rgba(15,23,42,0.8) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 2rem; }
+        .input-field { background: #0f172a; border: 1px solid #1e293b; border-radius: 1rem; padding: 1rem; width: 100%; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+        .nav-tab { cursor: pointer; padding: 0.5rem 1rem; border-bottom: 2px solid transparent; transition: 0.3s; }
+        .nav-tab.active { border-color: var(--accent); color: white; font-weight: bold; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body>
-    <div id="app" class="min-h-screen p-4 md:p-10">
-        
-        <transition name="list">
-            <div v-if="!isLoggedIn" class="max-w-md mx-auto mt-20 p-10 glass-card rounded-[2rem]">
-                <div class="flex items-center space-x-2 mb-2">
-                    <div class="status-dot"></div>
-                    <span class="text-xs text-blue-400 font-bold tracking-[0.2em] uppercase">Secure Server v2.1</span>
-                </div>
-                <h1 class="text-5xl font-black mb-2 gradient-text">LGBank</h1>
-                <p class="text-slate-400 mb-10 text-sm">Đối tác chiến lược: <span class="text-white font-semibold">{{ username || '...' }}</span></p>
-                
-                <div class="space-y-6">
-                    <div class="relative">
-                        <input v-model="username" type="text" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-5 pt-7 focus:border-blue-500 outline-none transition peer" id="user-input">
-                        <label for="user-input" class="absolute left-5 top-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest transition-all peer-focus:text-blue-400">Định danh đối tác</label>
+    <div id="app">
+        <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center p-6 animate__animated animate__fadeIn">
+            <div class="max-w-md w-full platinum-card p-10 text-center">
+                <div class="mb-8">
+                    <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
+                        <span class="text-3xl font-bold">LG</span>
                     </div>
-                    <button @click="login" class="w-full btn-primary py-5 rounded-2xl font-bold text-lg shadow-lg">KÍCH HOẠT HỆ THỐNG</button>
+                    <h1 class="text-3xl font-bold tracking-tighter">LGBank Platinum</h1>
+                    <p class="text-slate-500 text-sm mt-2">Hệ thống quản lý tài sản số toàn cầu</p>
                 </div>
-            </div>
-        </transition>
-
-        <div v-else class="max-w-6xl mx-auto">
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
-                <div>
-                    <p class="text-slate-500 text-sm font-medium">Xin chào đối tác,</p>
-                    <h2 class="text-3xl font-bold tracking-tight">{{ user.name }} <span class="text-blue-500 text-sm">✓</span></h2>
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="text-xs font-bold uppercase text-slate-500 ml-1">Mã đối tác (Username)</label>
+                        <input v-model="auth.user" type="text" class="input-field mt-1" placeholder="Nhập ID...">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold uppercase text-slate-500 ml-1">Mật mã bảo mật</label>
+                        <input v-model="auth.pass" type="password" class="input-field mt-1" placeholder="••••••••">
+                    </div>
+                    <button @click="handleLogin" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold mt-4 transition-all uppercase tracking-widest shadow-xl shadow-blue-600/20">Truy cập hệ thống</button>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-right hidden md:block">
-                        <p class="text-xs text-slate-500">Trạng thái kết nối</p>
-                        <p class="text-xs font-bold text-green-400 uppercase tracking-widest">Mã hóa đầu cuối</p>
-                    </div>
-                    <button @click="logout" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-3 px-6 rounded-2xl text-xs font-bold transition">THOÁT</button>
-                </div>
-            </header>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="glass-card p-10 rounded-[2.5rem] relative overflow-hidden group">
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-16">
-                                <span class="text-slate-400 text-sm font-bold tracking-widest uppercase">Tổng tài sản khả dụng</span>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-4 opacity-50" alt="Visa">
-                            </div>
-                            <h3 class="text-6xl font-bold tracking-tighter mb-12">{{ formatCurrency(user.balance) }}</h3>
-                            <div class="flex space-x-4">
-                                <button @click="showTransferModal = true" class="btn-primary px-8 py-4 rounded-2xl font-bold flex items-center group">
-                                    <span>Chuyển tiền nhanh</span>
-                                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-[120px] -mr-40 -mt-40 transition-all group-hover:bg-blue-600/20"></div>
-                    </div>
-
-                    <div class="glass-card rounded-[2rem] overflow-hidden">
-                        <div class="p-8 border-b border-white/5 flex justify-between items-center">
-                            <h4 class="font-bold text-xl uppercase tracking-tighter text-slate-300">Lịch sử giao dịch lõi</h4>
-                            <button @click="clearHistory" class="text-[10px] text-slate-600 hover:text-red-400 font-bold uppercase transition">Xóa nhật ký</button>
-                        </div>
-                        <div class="max-h-[400px] overflow-y-auto custom-scrollbar">
-                            <transition-group name="list" tag="div" class="divide-y divide-white/5">
-                                <div v-for="tx in transactions" :key="tx.id" class="p-8 flex justify-between items-center hover:bg-white/[0.02] transition">
-                                    <div class="flex items-center">
-                                        <div :class="tx.type === 'in' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'" class="p-4 rounded-2xl mr-5">
-                                            <svg v-if="tx.type === 'in'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                            <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-slate-200 uppercase text-xs tracking-wider mb-1">{{ tx.title }}</p>
-                                            <p class="text-[10px] text-slate-500 font-medium">{{ tx.date }} • ID: {{ tx.id.toString().slice(-6) }}</p>
-                                        </div>
-                                    </div>
-                                    <p :class="tx.type === 'in' ? 'text-emerald-400' : 'text-white'" class="font-black text-lg">
-                                        {{ tx.type === 'in' ? '+' : '-' }} {{ formatCurrency(tx.amount) }}
-                                    </p>
-                                </div>
-                            </transition-group>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-8">
-                    <div class="glass-card p-8 rounded-[2rem]">
-                        <h4 class="font-bold mb-6 text-slate-400 uppercase text-xs tracking-[0.2em]">Tiện ích vvip</h4>
-                        <div class="space-y-4">
-                            <div class="bg-slate-900/80 p-5 rounded-2xl border border-white/5 hover:border-blue-500/50 transition cursor-pointer flex items-center">
-                                <div class="bg-blue-500/10 p-3 rounded-xl mr-4 text-blue-500">💰</div>
-                                <span class="text-sm font-semibold text-slate-300">Gửi tiết kiệm (8.5%)</span>
-                            </div>
-                            <div class="bg-slate-900/80 p-5 rounded-2xl border border-white/5 hover:border-blue-500/50 transition cursor-pointer flex items-center">
-                                <div class="bg-purple-500/10 p-3 rounded-xl mr-4 text-purple-500">💳</div>
-                                <span class="text-sm font-semibold text-slate-300">Quản lý thẻ ảo Platinum</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 p-8 rounded-[2rem] border border-blue-500/20">
-                        <p class="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">LGBank News</p>
-                        <p class="text-sm text-slate-300 leading-relaxed">Nâng cấp hệ thống Core Banking hoàn tất. Tốc độ giao dịch hiện tại: <span class="text-white font-bold">1ms</span>.</p>
-                    </div>
-                </div>
+                <p class="mt-8 text-[10px] text-slate-600 uppercase tracking-widest">© 2026 LGBank International. Secure by AES-256.</p>
             </div>
         </div>
 
-        <div v-if="showTransferModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6 z-50">
-            <transition name="list" appear>
-                <div class="glass-card p-10 rounded-[2.5rem] w-full max-w-md shadow-3xl border-blue-500/20">
-                    <h3 class="text-2xl font-bold mb-2 uppercase tracking-tighter">Lệnh chuyển tiền</h3>
-                    <p class="text-slate-500 text-xs mb-8 uppercase tracking-widest font-bold">Xác thực bằng mã hóa đầu cuối</p>
+        <div v-else class="min-h-screen animate__animated animate__fadeIn">
+            <nav class="max-w-6xl mx-auto p-6 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">L</div>
+                    <span class="font-bold text-xl tracking-tighter">LGBank</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex space-x-4">
+                        <span @click="view = 'dashboard'" :class="{active: view === 'dashboard'}" class="nav-tab text-sm">Dashboard</span>
+                        <span @click="view = 'cards'" :class="{active: view === 'cards'}" class="nav-tab text-sm">Thẻ ảo</span>
+                        <span @click="view = 'savings'" :class="{active: view === 'savings'}" class="nav-tab text-sm">Tiết kiệm</span>
+                    </div>
+                    <button @click="logout" class="text-slate-500 hover:text-white transition">Thoát</button>
+                </div>
+            </nav>
+
+            <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-2 space-y-8">
                     
-                    <div class="space-y-5">
-                        <div class="relative">
-                            <input v-model="transferData.to" type="text" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 pt-7 focus:border-blue-500 outline-none" placeholder="Nhập số tài khoản...">
-                            <label class="absolute left-5 top-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Đối tác nhận</label>
+                    <div v-if="view === 'dashboard'" class="animate__animated animate__fadeIn">
+                        <div class="platinum-card p-10 relative overflow-hidden group">
+                            <p class="text-slate-400 font-medium">Số dư khả dụng</p>
+                            <h2 class="text-6xl font-bold my-4 tracking-tighter">{{ formatCurrency(user.balance) }}</h2>
+                            <div class="flex space-x-4 mt-8">
+                                <button @click="openTransfer" class="bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition">Chuyển tiền</button>
+                                <button @click="openTopup" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold hover:bg-slate-700 transition">Nạp vốn</button>
+                            </div>
+                            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px]"></div>
                         </div>
-                        <div class="relative">
-                            <input v-model.number="transferData.amount" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 pt-7 focus:border-blue-500 outline-none font-bold text-xl" placeholder="0">
-                            <label class="absolute left-5 top-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Số tiền (VND)</label>
+
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4">Giao dịch gần đây</h3>
+                            <div class="platinum-card overflow-hidden">
+                                <div v-if="transactions.length === 0" class="p-10 text-center text-slate-500 italic">Chưa có dữ liệu giao dịch.</div>
+                                <div v-for="tx in transactions" :key="tx.id" class="p-5 flex justify-between items-center border-b border-white/5 hover:bg-white/5 transition">
+                                    <div class="flex items-center space-x-4">
+                                        <div :class="tx.type === 'in' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'" class="p-3 rounded-full">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path :d="tx.type === 'in' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm">{{ tx.desc }}</p>
+                                            <p class="text-[10px] text-slate-500 uppercase">{{ tx.date }}</p>
+                                        </div>
+                                    </div>
+                                    <p :class="tx.type === 'in' ? 'text-green-500' : 'text-white'" class="font-bold">{{ tx.type === 'in' ? '+' : '-' }}{{ formatCurrency(tx.amount) }}</p>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 mt-8">
-                            <button @click="showTransferModal = false" class="bg-slate-800 py-5 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-slate-700 transition">Hủy lệnh</button>
-                            <button @click="confirmTransfer" class="btn-primary py-5 rounded-2xl font-bold text-sm uppercase tracking-widest">Xác nhận</button>
+                    </div>
+
+                    <div v-if="view === 'cards'" class="animate__animated animate__fadeIn">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Thẻ Virtual Platinum</h2>
+                            <button @click="createCard" class="text-sm bg-blue-600 px-4 py-2 rounded-lg font-bold">Tạo thẻ mới</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div v-for="card in cards" :key="card.id" class="platinum-card p-8 bg-gradient-to-br from-slate-800 to-black border-slate-700">
+                                <div class="flex justify-between mb-12">
+                                    <span class="text-xs font-bold italic">LGBank Platinum</span>
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-4 opacity-70">
+                                </div>
+                                <p class="text-xl tracking-[0.3em] font-mono mb-4">{{ card.number }}</p>
+                                <div class="flex space-x-8 text-[10px] text-slate-500 uppercase">
+                                    <div><p>Hết hạn</p><p class="text-white">{{ card.expiry }}</p></div>
+                                    <div><p>CVV</p><p class="text-white">***</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="view === 'savings'" class="animate__animated animate__fadeIn space-y-6">
+                        <div class="platinum-card p-8">
+                            <h2 class="text-xl font-bold mb-4">Gói tiết kiệm thông minh</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div v-for="plan in savingPlans" class="bg-slate-900 p-6 rounded-2xl border border-white/5 text-center">
+                                    <p class="text-blue-500 font-bold">{{ plan.rate }}%/năm</p>
+                                    <p class="text-sm my-2 font-bold uppercase">{{ plan.name }}</p>
+                                    <button @click="openSavings(plan)" class="text-[10px] bg-slate-800 px-4 py-2 rounded-lg hover:bg-blue-600 transition">Đầu tư ngay</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="platinum-card p-8">
+                            <h3 class="font-bold mb-4">Khoản đầu tư hiện tại</h3>
+                            <div v-for="s in userSavings" class="flex justify-between p-4 bg-white/5 rounded-xl mb-2">
+                                <span>{{ s.name }}</span>
+                                <span class="font-bold text-green-500">{{ formatCurrency(s.amount) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="space-y-8">
+                    <div class="platinum-card p-8">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Xác thực sinh trắc học</h4>
+                        <div class="flex items-center space-x-4 p-4 bg-blue-600/5 rounded-2xl border border-blue-500/20">
+                            <div class="w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center text-blue-500">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 0010 0V7a5 5 0 00-5-5zM7 7a3 3 0 116 0v2H7V7zM4 11a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase">Mã PIN: 123456</p>
+                                <p class="text-[10px] text-slate-500 italic">Dùng cho mọi giao dịch</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="platinum-card p-8">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Thị trường số</h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">USD/VND</span>
+                                <span class="text-green-500 font-bold">25.410 ↑</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">LGB Token</span>
+                                <span class="text-blue-500 font-bold">1.24 USD</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </transition>
+            </main>
         </div>
     </div>
 
@@ -159,111 +179,140 @@
             data() {
                 return {
                     isLoggedIn: false,
-                    username: '',
-                    showTransferModal: false,
-                    user: { id: '9999', name: '', balance: 100000000 },
-                    transferData: { to: '', amount: null },
-                    transactions: []
+                    view: 'dashboard',
+                    auth: { user: '', pass: '' },
+                    user: { name: 'Lê Gia Luân', balance: 50000000 },
+                    transactions: [],
+                    cards: [],
+                    savingPlans: [
+                        { name: 'Ngắn hạn', rate: 4.5 },
+                        { name: 'Trung hạn', rate: 7.2 },
+                        { name: 'Dài hạn', rate: 9.5 }
+                    ],
+                    userSavings: []
                 }
             },
             mounted() {
-                // Khôi phục dữ liệu từ LocalStorage khi tải trang
-                const savedData = localStorage.getItem('lgbank_data');
-                if (savedData) {
-                    const parsed = JSON.parse(savedData);
-                    this.user = parsed.user;
-                    this.transactions = parsed.transactions;
-                } else {
-                    // Dữ liệu mẫu nếu lần đầu truy cập
-                    this.transactions = [
-                        { id: Date.now() - 86400000, title: 'Thanh toán Cloud Server', amount: 1250000, type: 'out', date: '14/04/2026' },
-                        { id: Date.now() - 172800000, title: 'Nhận từ LGBank Global', amount: 50000000, type: 'in', date: '13/04/2026' }
-                    ];
+                const saved = localStorage.getItem('lgbank_pro_v3');
+                if (saved) {
+                    const d = JSON.parse(saved);
+                    this.user = d.user;
+                    this.transactions = d.transactions;
+                    this.cards = d.cards;
+                    this.userSavings = d.userSavings;
                 }
             },
             methods: {
-                saveData() {
-                    localStorage.setItem('lgbank_data', JSON.stringify({
-                        user: this.user,
-                        transactions: this.transactions
+                save() {
+                    localStorage.setItem('lgbank_pro_v3', JSON.stringify({
+                        user: this.user, transactions: this.transactions, 
+                        cards: this.cards, userSavings: this.userSavings
                     }));
                 },
-                login() {
-                    if(this.username.trim().length >= 3) {
-                        this.user.name = this.username;
+                handleLogin() {
+                    if (this.auth.user && this.auth.pass) {
                         this.isLoggedIn = true;
-                        this.saveData();
                         Swal.fire({
-                            title: 'TRUY CẬP THÀNH CÔNG',
-                            text: 'Chào mừng đối tác ' + this.username + ' đến với hệ thống LGBank!',
-                            icon: 'success',
-                            background: '#0f172a',
-                            color: '#fff',
-                            confirmButtonColor: '#2563eb'
+                            title: 'AUTHENTICATED',
+                            text: 'Hệ thống LGBank sẵn sàng phục vụ.',
+                            icon: 'success', background: '#0f172a', color: '#fff'
                         });
-                    } else {
-                        Swal.fire('LỖI', 'Định danh đối tác quá ngắn!', 'error');
                     }
                 },
-                logout() { 
-                    this.isLoggedIn = false; 
+                logout() { this.isLoggedIn = false; },
+                formatCurrency(v) {
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
                 },
-                formatCurrency(val) {
-                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val).replace('₫', 'đ');
-                },
-                confirmTransfer() {
-                    if(!this.transferData.to || !this.transferData.amount) {
-                        Swal.fire('LỖI', 'Vui lòng nhập đầy đủ thông tin giao dịch!', 'warning');
-                        return;
-                    }
-                    if(this.transferData.amount > this.user.balance) {
-                        Swal.fire('TỪ CHỐI', 'Số dư tài khoản không đủ để thực hiện!', 'error');
-                        return;
-                    }
-
-                    Swal.fire({
-                        title: 'XÁC THỰC GIAO DỊCH',
-                        text: `Chuyển ${this.formatCurrency(this.transferData.amount)} tới STK ${this.transferData.to}?`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        background: '#0f172a',
-                        color: '#fff',
-                        confirmButtonText: 'XÁC NHẬN',
-                        cancelButtonText: 'HỦY',
-                        confirmButtonColor: '#2563eb'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            this.executeTransfer();
+                // CHỨC NĂNG CHUYỂN TIỀN THỰC
+                async openTransfer() {
+                    const { value: formValues } = await Swal.fire({
+                        title: 'CHUYỂN TIỀN QUỐC TẾ',
+                        html:
+                            '<input id="swal-stk" class="swal2-input" placeholder="Số tài khoản">' +
+                            '<input id="swal-amount" type="number" class="swal2-input" placeholder="Số tiền">' +
+                            '<input id="swal-pin" type="password" class="swal2-input" placeholder="Nhập mã PIN (123456)">',
+                        focusConfirm: false,
+                        background: '#0f172a', color: '#fff',
+                        preConfirm: () => {
+                            return [
+                                document.getElementById('swal-stk').value,
+                                document.getElementById('swal-amount').value,
+                                document.getElementById('swal-pin').value
+                            ]
                         }
                     });
+
+                    if (formValues) {
+                        const [stk, amount, pin] = formValues;
+                        if (pin !== '123456') return Swal.fire('LỖI', 'Mã PIN không chính xác', 'error');
+                        if (amount > this.user.balance) return Swal.fire('LỖI', 'Số dư không đủ', 'error');
+                        
+                        this.user.balance -= Number(amount);
+                        this.transactions.unshift({
+                            id: Date.now(),
+                            desc: `Chuyển tới đối tác: ${stk}`,
+                            amount: Number(amount),
+                            type: 'out',
+                            date: new Date().toLocaleString()
+                        });
+                        this.save();
+                        Swal.fire('THÀNH CÔNG', 'Giao dịch đã được xác thực.', 'success');
+                    }
                 },
-                executeTransfer() {
-                    this.user.balance -= this.transferData.amount;
-                    this.transactions.unshift({
+                // CHỨC NĂNG NẠP TIỀN (CUSTOM BALANCE)
+                async openTopup() {
+                    const { value: amount } = await Swal.fire({
+                        title: 'NẠP VỐN VÀO HỆ THỐNG',
+                        input: 'number',
+                        inputLabel: 'Số tiền muốn nạp (VND)',
+                        inputPlaceholder: '1.000.000',
+                        background: '#0f172a', color: '#fff'
+                    });
+                    if (amount) {
+                        this.user.balance += Number(amount);
+                        this.transactions.unshift({
+                            id: Date.now(),
+                            desc: 'Nạp vốn từ Global Treasury',
+                            amount: Number(amount),
+                            type: 'in',
+                            date: new Date().toLocaleString()
+                        });
+                        this.save();
+                    }
+                },
+                createCard() {
+                    const newCard = {
                         id: Date.now(),
-                        title: 'Chuyển tiền tới: ' + this.transferData.to,
-                        amount: this.transferData.amount,
-                        type: 'out',
-                        date: new Date().toLocaleString('vi-VN')
-                    });
-                    
-                    this.saveData();
-                    this.showTransferModal = false;
-                    this.transferData = { to: '', amount: null };
-                    
-                    Swal.fire({
-                        title: 'GIAO DỊCH HOÀN TẤT',
-                        text: 'Mã số giao dịch đã được lưu vào sổ cái hệ thống.',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false,
-                        background: '#0f172a',
-                        color: '#fff'
-                    });
+                        number: '4242 ' + Math.floor(1000 + Math.random() * 9000) + ' ' + Math.floor(1000 + Math.random() * 9000) + ' ' + Math.floor(1000 + Math.random() * 9000),
+                        expiry: '12/30'
+                    };
+                    this.cards.push(newCard);
+                    this.save();
                 },
-                clearHistory() {
-                    this.transactions = [];
-                    this.saveData();
+                openSavings(plan) {
+                    Swal.fire({
+                        title: `Gửi tiết kiệm ${plan.name}`,
+                        text: `Lãi suất ưu đãi ${plan.rate}%/năm.`,
+                        input: 'number',
+                        inputPlaceholder: 'Số tiền gửi...',
+                        showCancelButton: true,
+                        background: '#0f172a', color: '#fff'
+                    }).then(res => {
+                        if (res.value && res.value <= this.user.balance) {
+                            const amt = Number(res.value);
+                            this.user.balance -= amt;
+                            this.userSavings.push({ name: plan.name, amount: amt });
+                            this.transactions.unshift({
+                                id: Date.now(),
+                                desc: `Mở sổ tiết kiệm: ${plan.name}`,
+                                amount: amt,
+                                type: 'out',
+                                date: new Date().toLocaleString()
+                            });
+                            this.save();
+                            Swal.fire('Thành công', 'Khoản đầu tư đã được kích hoạt.', 'success');
+                        }
+                    });
                 }
             }
         }).mount('#app')
