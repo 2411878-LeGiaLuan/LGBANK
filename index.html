@@ -3,148 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LGBank v3.3 - The Masterpiece</title>
+    <title>LGBank v3.4 - Stable Transaction</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
-        :root { --vcb-green: #10b981; --bg-dark: #020617; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-dark); color: #f8fafc; }
-        .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 2rem; }
-        .input-vcb { background: #0f172a; border: 1px solid #1e293b; border-radius: 1rem; padding: 1rem; width: 100%; outline: none; color: white; transition: 0.3s; }
-        .input-vcb:focus { border-color: var(--vcb-green); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
-        .nav-tab { cursor: pointer; padding: 0.6rem 1.2rem; border-radius: 0.75rem; transition: 0.3s; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
-        .nav-tab.active { background: rgba(16, 185, 129, 0.1); color: var(--vcb-green); }
-        .btn-main { background: linear-gradient(135deg, #10b981, #059669); transition: all 0.4s; }
-        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(16, 185, 129, 0.5); }
-        .receipt-dot { height: 12px; width: 12px; background-color: var(--vcb-green); border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
+        .glass { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.05); }
+        .vcb-receipt { background: #0f172a; border-radius: 1.5rem; padding: 1.5rem; border: 1px dashed #334155; }
+        .btn-gradient { background: linear-gradient(90deg, #6366f1, #a855f7); }
+        .input-vcb { background: #020617; border: 1px solid #1e293b; border-radius: 0.75rem; padding: 0.8rem; width: 100%; color: white; outline: none; }
+        .input-vcb:focus { border-color: #6366f1; }
     </style>
 </head>
 <body>
     <div id="app">
-        <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center p-6 animate__animated animate__fadeIn">
-            <div class="max-w-md w-full glass-panel p-10 text-center shadow-2xl">
-                <transition name="list" mode="out-in">
-                    <div v-if="loginStep === 1" key="l1">
-                        <div class="w-20 h-20 bg-emerald-500 rounded-[1.5rem] mx-auto flex items-center justify-center mb-8 shadow-xl shadow-emerald-500/20">
-                            <span class="text-3xl font-bold text-white">LG</span>
-                        </div>
-                        <h1 class="text-3xl font-bold tracking-tight mb-2">LGBank Digital</h1>
-                        <p class="text-slate-500 text-sm mb-8">Hệ thống lõi - Xác thực đa tầng</p>
-                        <div class="space-y-4 text-left">
-                            <input v-model="auth.user" class="input-vcb" placeholder="Tên đăng nhập">
-                            <input v-model="auth.pass" type="password" class="input-vcb" placeholder="Mật khẩu">
-                            <button @click="requestOTP" class="w-full btn-main py-4 rounded-2xl font-bold text-white mt-4 uppercase tracking-widest">Tiếp tục</button>
-                        </div>
-                    </div>
-                    <div v-else key="l2" class="animate__animated animate__fadeInRight">
-                        <div class="w-20 h-20 bg-blue-500/20 text-blue-400 rounded-full mx-auto flex items-center justify-center mb-8">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-width="2"/></svg>
-                        </div>
-                        <h1 class="text-2xl font-bold mb-2">Xác minh OTP</h1>
-                        <p class="text-slate-400 text-sm mb-6">Mã OTP an toàn: <span class="text-white font-bold tracking-[0.2em]">{{ generatedOTP }}</span></p>
-                        <input v-model="auth.otp" class="input-vcb text-center text-3xl font-bold tracking-[0.4em] mb-6" maxlength="6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <button @click="loginStep = 1" class="bg-slate-800 py-4 rounded-2xl font-bold">Quay lại</button>
-                            <button @click="handleLogin" class="btn-main py-4 rounded-2xl font-bold text-white">Xác nhận</button>
-                        </div>
-                    </div>
-                </transition>
+        <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center p-6">
+            <div class="max-w-md w-full glass p-8 rounded-[2rem] text-center shadow-2xl animate__animated animate__fadeIn">
+                <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg">
+                    <span class="text-2xl font-bold text-white">LG</span>
+                </div>
+                <h1 class="text-2xl font-bold mb-6">LGBank Platinum</h1>
+                <input v-model="auth.user" class="input-vcb mb-4" placeholder="Mã đối tác (Username)">
+                <input v-model="auth.pass" type="password" class="input-vcb mb-6" placeholder="Mật mã bảo mật">
+                <button @click="handleLogin" class="w-full btn-gradient py-4 rounded-xl font-bold text-white uppercase tracking-widest">Kích hoạt hệ thống</button>
             </div>
         </div>
 
         <div v-else class="min-h-screen animate__animated animate__fadeIn">
             <nav class="max-w-6xl mx-auto p-6 flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center font-bold text-white text-xl">L</div>
-                    <span class="font-bold text-2xl tracking-tighter">LGBank</span>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center font-bold text-white">L</div>
+                    <span class="font-bold text-xl">LGBank</span>
                 </div>
-                <div class="hidden md:flex bg-slate-900/50 p-1.5 rounded-2xl border border-white/5">
-                    <span @click="view = 'dashboard'" :class="{active: view === 'dashboard'}" class="nav-tab">Tổng quan</span>
-                    <span @click="view = 'cards'" :class="{active: view === 'cards'}" class="nav-tab">Thẻ ảo</span>
-                    <span @click="view = 'savings'" :class="{active: view === 'savings'}" class="nav-tab">Tiết kiệm</span>
+                <div class="flex space-x-6 text-sm font-bold text-slate-400">
+                    <span @click="view = 'home'" :class="{'text-white border-b-2 border-indigo-500': view === 'home'}" class="cursor-pointer pb-1">Dashboard</span>
+                    <span @click="view = 'cards'" :class="{'text-white border-b-2 border-indigo-500': view === 'cards'}" class="cursor-pointer pb-1">Thẻ ảo</span>
+                    <span @click="view = 'savings'" :class="{'text-white border-b-2 border-indigo-500': view === 'savings'}" class="cursor-pointer pb-1">Tiết kiệm</span>
+                    <span @click="logout" class="text-red-500 cursor-pointer">Thoát</span>
                 </div>
-                <button @click="logout" class="text-slate-500 font-bold text-xs uppercase tracking-widest hover:text-red-500 transition">Đăng xuất</button>
             </nav>
 
-            <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 space-y-8">
-                    
-                    <div v-if="view === 'dashboard'" class="animate__animated animate__fadeIn">
-                        <div class="glass-panel p-10 relative overflow-hidden group">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Số dư khả dụng</p>
-                                    <h2 class="text-5xl md:text-6xl font-bold tracking-tighter">{{ formatCurrency(user.balance) }} <span class="text-2xl text-emerald-500">VND</span></h2>
-                                </div>
-                                <div class="bg-emerald-500/10 p-3 rounded-2xl">
-                                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/></svg>
+            <main class="max-w-6xl mx-auto p-6">
+                <div v-if="view === 'home'">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="glass p-10 rounded-[2.5rem] relative overflow-hidden">
+                                <p class="text-slate-400 text-sm font-semibold mb-2">SỐ DƯ KHẢ DỤNG</p>
+                                <h2 class="text-5xl font-bold mb-8">{{ formatCurrency(user.balance) }} <span class="text-2xl">đ</span></h2>
+                                <div class="flex space-x-4">
+                                    <button @click="openTransfer" class="btn-gradient px-8 py-3 rounded-xl font-bold text-white shadow-lg shadow-indigo-500/20">Chuyển tiền nhanh</button>
+                                    <button @click="openTopup" class="bg-slate-800 px-8 py-3 rounded-xl font-bold hover:bg-slate-700 transition">Nạp vốn</button>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap gap-4 mt-10">
-                                <button @click="openTransfer" class="btn-main px-8 py-4 rounded-2xl font-bold text-white flex items-center shadow-lg">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-width="2.5"/></svg> Chuyển tiền 24/7
-                                </button>
-                                <button @click="openTopup" class="bg-slate-800 px-8 py-4 rounded-2xl font-bold hover:bg-slate-700 transition">Nạp nguồn vốn</button>
+
+                            <div>
+                                <h3 class="font-bold text-lg mb-4 flex justify-between">
+                                    <span>Lịch sử giao dịch lõi</span>
+                                    <span @click="transactions = []" class="text-[10px] text-slate-600 cursor-pointer hover:text-red-500">XÓA NHẬT KÝ</span>
+                                </h3>
+                                <div class="glass rounded-[2rem] overflow-hidden">
+                                    <div v-if="transactions.length === 0" class="p-10 text-center text-slate-500">Chưa có giao dịch phát sinh.</div>
+                                    <div v-for="tx in transactions" :key="tx.id" @click="showReceipt(tx)" class="p-6 border-b border-white/5 flex justify-between items-center hover:bg-white/[0.02] cursor-pointer transition">
+                                        <div class="flex items-center space-x-4">
+                                            <div :class="tx.type === 'in' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'" class="p-3 rounded-full">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path :d="tx.type === 'in' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'" stroke-width="2.5"/></svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-sm">{{ tx.desc }}</p>
+                                                <p class="text-[10px] text-slate-500 mt-1 uppercase">ID: {{ tx.tid }} | {{ tx.date }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p :class="tx.type === 'in' ? 'text-emerald-400' : 'text-white'" class="font-bold">{{ tx.type === 'in' ? '+' : '-' }}{{ formatCurrency(tx.amount) }} đ</p>
+                                            <p class="text-[9px] text-slate-600 font-bold uppercase mt-1">Dư: {{ formatCurrency(tx.balanceAfter) }} đ</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px]"></div>
                         </div>
 
-                        <div class="mt-10">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-xl font-bold">Lịch sử giao dịch</h3>
-                                <button @click="clearHistory" class="text-[10px] text-slate-600 hover:text-red-500 font-bold uppercase">Xóa lịch sử</button>
+                        <div class="space-y-8">
+                            <div class="glass p-8 rounded-[2rem]">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Xác thực giao dịch</h4>
+                                <div class="bg-slate-900/50 p-4 rounded-xl border border-white/5 flex items-center justify-between">
+                                    <span class="text-xs text-slate-400">Mã PIN (Bio):</span>
+                                    <span class="font-mono font-bold text-indigo-400">{{ TRADING_PIN }}</span>
+                                </div>
                             </div>
-                            <div class="glass-panel overflow-hidden">
-                                <div v-if="transactions.length === 0" class="p-20 text-center text-slate-500 italic">Chưa phát hiện giao dịch trong hệ thống lõi.</div>
-                                <div v-for="tx in transactions" :key="tx.id" @click="showReceiptPopup(tx)" class="p-6 border-b border-white/5 flex justify-between items-center hover:bg-white/[0.02] cursor-pointer transition">
-                                    <div class="flex items-center space-x-5">
-                                        <div :class="tx.type === 'in' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'" class="p-4 rounded-2xl">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path :d="tx.type === 'in' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'" stroke-width="2.5"/></svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-sm text-slate-200">{{ tx.desc }}</p>
-                                            <p class="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-tighter">{{ tx.date }} | TID: {{ tx.tid }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <p :class="tx.type === 'in' ? 'text-emerald-400' : 'text-white'" class="font-bold text-lg">{{ tx.type === 'in' ? '+' : '-' }}{{ formatCurrency(tx.amount) }}</p>
-                                        <p class="text-[9px] text-slate-600 font-black uppercase mt-1 tracking-widest">Dư: {{ formatCurrency(tx.balanceAfter) }}</p>
-                                    </div>
+                            <div class="glass p-8 rounded-[2rem]">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">LGBank News</h4>
+                                <div class="bg-indigo-500/10 p-4 rounded-xl text-[11px] leading-relaxed">
+                                    Nâng cấp hệ thống Core Banking hoàn tất. Tốc độ giao dịch hiện tại: <span class="text-emerald-400 font-bold">1ms</span>.
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div v-if="view === 'cards'" class="animate__animated animate__fadeIn space-y-8">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-2xl font-bold">Quản lý Thẻ Platinum</h2>
-                            <button @click="createCard" class="btn-main px-6 py-2.5 rounded-xl font-bold text-white text-sm">Cấp thẻ mới</button>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div v-for="card in cards" :key="card.id" class="glass-panel p-8 bg-gradient-to-br from-slate-800 to-black relative overflow-hidden group">
-                                <div class="relative z-10">
-                                    <div class="flex justify-between mb-16">
-                                        <span class="text-xs font-black italic tracking-widest text-emerald-500">LGBANK PLATINUM</span>
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-4 opacity-70">
-                                    </div>
-                                    <p class="text-2xl font-mono tracking-[0.3em] text-white mb-8">{{ card.number }}</p>
-                                    <div class="flex space-x-12">
-                                        <div><p class="text-[10px] text-slate-500 uppercase">Hết hạn</p><p class="text-sm font-bold font-mono">{{ card.expiry }}</p></div>
-                                        <div><p class="text-[10px] text-slate-500 uppercase">CVV</p><p class="text-sm font-bold font-mono">***</p></div>
-                                    </div>
-                                </div>
-                                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/5 rounded-full blur-3xl transition group-hover:bg-emerald-500/10"></div>
+                <div v-if="view === 'cards'" class="animate__animated animate__fadeIn">
+                    <h2 class="text-2xl font-bold mb-8">Quản lý Thẻ Platinum</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div v-for="card in cards" :key="card.id" class="glass p-8 rounded-[2rem] bg-gradient-to-br from-slate-800 to-black relative overflow-hidden">
+                            <div class="flex justify-between mb-12">
+                                <span class="text-xs font-bold italic tracking-tighter">LGBank Platinum</span>
+                                <span class="text-xs opacity-50 font-bold italic">VISA</span>
+                            </div>
+                            <p class="text-2xl font-mono tracking-widest mb-8">{{ card.number }}</p>
+                            <div class="flex space-x-8 text-xs font-mono">
+                                <div><p class="opacity-50">HẾT HẠN</p><p>{{ card.expiry }}</p></div>
+                                <div><p class="opacity-50">CVV</p><p>***</p></div>
                             </div>
                         </div>
+                        <button @click="createCard" class="glass rounded-[2rem] flex flex-col items-center justify-center p-8 border-dashed border-2 border-white/10 hover:border-indigo-500/50 transition">
+                            <span class="text-4xl mb-2 opacity-30">+</span>
+                            <span class="text-sm font-bold opacity-50">Cấp thẻ mới</span>
+                        </button>
                     </div>
+                </div>
 
-                    <div v-if="view === 'savings'" class="animate__animated animate__fadeIn space-y-8">
-                        <div class="glass-panel p-10">
-                            <h2 class="text-2xl font-bold mb-8">Tiết kiệm thông minh</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div
+                <div v-if="view === 'savings'" class="animate__animated animate__fadeIn">
+                    <h2 class="text-2xl font-bold mb-8">Gói tiết kiệm thông minh</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div v-for="p in plans" class="glass p-8 rounded-[2rem] text-center border border-white/5">
+                            <p class="text-indigo-400 text-3xl font-bold mb-1">{{ p.rate }}%</p>
+                            <p class="text-xs font-bold opacity-50 mb-6 uppercase">{{ p.name }}</p>
+                            <button @click="openSavings(p)" class="w-full bg-indigo-500 py-3 rounded-xl text-xs font-bold">Đầu tư ngay</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+        createApp({
+            data() {
+                return {
+                    isLoggedIn: false, view: 'home',
+                    auth: { user: 'Lê Gia Luân', pass: '' },
+                    TRADING_PIN: '99999',
+                    user: { balance: 50000000 },
+                    transactions: [
+                        { id: 1, tid: 'FT390113', desc: 'Chuyển tiền tới: 8860188099', amount: 50000000, type: 'out', date: '15/04/2026', balanceAfter: 0 },
+                        { id: 2, tid: 'SV947750', desc: 'Thanh toán Cloud Server', amount: 1250000, type: 'out', date: '14/04/2026', balanceAfter: 50000000 },
+                        { id: 3, tid: 'RE547750', desc: 'Nhận từ LGBank Global', amount: 50000000, type: 'in', date: '13/04/2026', balanceAfter: 51250000 }
+                    ],
+                    cards: [{ id: 1, number: '4242 3096 3047 2734', expiry: '12/30' }],
+                    plans: [{name: 'Ngắn hạn', rate: 4.5}, {name: 'Trung hạn', rate: 7.2}, {name: 'Dài hạn', rate: 9.5}]
+                }
+            },
+            mounted() {
+                const saved = localStorage.getItem('lgbank_v3_4');
+                if (saved) {
+                    const d = JSON.parse(saved);
+                    this.user = d.user; this.transactions = d.transactions; this.cards = d.cards;
+                }
+            },
+            methods: {
+                save() { localStorage.setItem('lgbank_v3_4', JSON.stringify({ user: this.user, transactions: this.transactions, cards: this.cards })); },
+                handleLogin() { if(this.auth.user) { this.isLoggedIn = true; this.save(); } },
+                logout() { this.isLoggedIn = false; },
+                formatCurrency(v) { return new Intl.NumberFormat('vi-VN').format(v); },
+                
+                showReceipt(tx) {
+                    Swal.fire({
+                        title: '<span style="color:#10b981">GIAO DỊCH THÀNH CÔNG</span>',
+                        html: `
+                        <div class="text-left vcb-receipt space-y-3">
+                            <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase"><span>Mã giao dịch</span><span class="text-white">${tx.tid}</span></div>
+                            <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase"><span>Thời gian</span><span class="text-white">${tx.date}</span></div>
+                            <div class="flex justify-between items-center py-2 border-y border-white/5"><span class="text-xs text-slate-400">Số tiền</span><span class="text-lg font-bold text-emerald-400">${tx.type === 'in' ? '+' : '-'}${this.formatCurrency(tx.amount)} đ</span></div>
+                            <div class="flex justify-between text-xs"><span class="text-slate-500">Nội dung</span><span class="text-white text-right font-bold ml-4">${tx.desc}</span></div>
+                            <div class="flex justify-between text-[10px] pt-2 border-t border-white/5"><span class="text-slate-500">SỐ DƯ SAU GD</span><span class="text-white font-bold">${this.formatCurrency(tx.balanceAfter)} đ</span></div>
+                        </div>`,
+                        background: '#020617', confirmButtonText: 'ĐÓNG', confirmButtonColor: '#6366f1'
+                    });
+                },
+
+                async openTransfer() {
+                    const { value: f } = await Swal.fire({
+                        title: 'Chuyển tiền nhanh',
+                        html: `<input id="sw-stk" class="swal2-input" placeholder="Số tài khoản"><input id="sw-amt" type="number" class="swal2-input" placeholder="Số tiền"><input id="sw-pin" type="password" class="swal2-input" placeholder="Mã PIN (99999)">`,
+                        background: '#0f172a', color: '#fff',
+                        preConfirm: () => ({ stk: document.getElementById('sw-stk').value, amt: Number(document.getElementById('sw-amt').value), pin: document.getElementById('sw-pin').value })
+                    });
+                    if (f && f.pin === this.TRADING_PIN && f.amt <= this.user.balance) {
+                        this.user.balance -= f.amt;
+                        const newTx = { id: Date.now(), tid: 'FT' + Math.floor(Math.random()*900000), desc: `Chuyển tới STK: ${f.stk}`, amount: f.amt, type: 'out', date: new Date().toLocaleDateString('vi-VN'), balanceAfter: this.user.balance };
+                        this.transactions.unshift(newTx); this.save(); this.showReceipt(newTx);
+                    }
+                },
+                async openTopup() {
+                    const { value: f } = await Swal.fire({
+                        title: 'Nạp vốn',
+                        html: `<input id="t-amt" type="number" class="swal2-input" placeholder="Số tiền"><input id="t-pin" type="password" class="swal2-input" placeholder="Mã PIN (99999)">`,
+                        background: '#0f172a',
+                        preConfirm: () => ({ amt: Number(document.getElementById('t-amt').value), pin: document.getElementById('t-pin').value })
+                    });
+                    if (f && f.pin === this.TRADING_PIN) {
+                        this.user.balance += f.amt;
+                        const newTx = { id: Date.now(), tid: 'RE' + Math.floor(Math.random()*900000), desc: 'Nạp tiền từ hệ thống', amount: f.amt, type: 'in', date: new Date().toLocaleDateString('vi-VN'), balanceAfter: this.user.balance };
+                        this.transactions.unshift(newTx); this.save(); this.showReceipt(newTx);
+                    }
+                },
+                createCard() { this.cards.push({ id: Date.now(), number: '4242 ' + Math.floor(1000 + Math.random()*9000) + ' ' + Math.floor(1000 + Math.random()*9000) + ' ' + Math.floor(1000 + Math.random()*9000), expiry: '12/30' }); this.save(); }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
